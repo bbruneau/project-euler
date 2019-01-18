@@ -37,9 +37,9 @@ const checkForPrimeFactor = ([primes, highestPrimeFactor, lastProduct]) => {
 };
 
 console.log(
-  R.takeLast(1)(
+  R.takeLast(2)(
     R.until(([primes, _, lastProduct]) =>
-      R.gte(R.takeLast(1)(primes))(lastProduct)
+      R.gt(R.takeLast(1)(primes))(lastProduct)
     )(checkForPrimeFactor)(initialValues)
   )[0]
 );
