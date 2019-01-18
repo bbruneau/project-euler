@@ -2,26 +2,6 @@ const R = require("ramda");
 
 const max = parseInt(process.argv.slice(2)[0]) || 600851475143;
 
-// const sieveForPrime = (prevPrimes = [2]) =>
-//       R.head(
-//         R.until(([primes]) => R.gt(primes.length)(prevPrimes.length))(
-//           ([primes, possiblePrime]) =>
-//             !primes.some(prime => possiblePrime % prime === 0)
-//             ? [[...primes, possiblePrime], null]
-//             : [primes, possiblePrime + 1]
-//         )([prevPrimes, R.last(prevPrimes) + 1])
-//       );
-
-const sieveForPrime = (prevPrimes = [2]) =>
-  R.head(
-    R.until(([primes]) => R.gt(primes.length)(prevPrimes.length))(
-      ([primes, possiblePrime]) =>
-        R.none(prime => possiblePrime % prime === 0)(primes)
-          ? [[...primes, possiblePrime], null]
-          : [primes, possiblePrime + 1]
-    )([prevPrimes, R.last(prevPrimes) + 1])
-  );
-
 // initialValues: [
 //   testedPrimes: Array<number>,
 //   lastProduct: number,
@@ -29,16 +9,25 @@ const sieveForPrime = (prevPrimes = [2]) =>
 // ]
 const initialValues = [[2], max, null];
 
+const sieveForPrime = (prevPrimes = [2]) =>
+  R.head(
+    R.until(([primes]) => R.gt(primes.length)(prevPrimes.length))(
+      ([primes, possiblePrime]) =>
+        R.ifElse(R.none(prime => R.equals(R.modulo(possiblePrime)(prime))(0)))(
+          () => [R.flatten([primes, possiblePrime]), null]
+        )(() => [primes, R.add(possiblePrime)(1)])(primes)
+    )([prevPrimes, R.add(R.last(prevPrimes))(1)])
+  );
+
 const checkForPrimeFactor = ([primes, lastProduct, highestPrimeFactor]) => {
   const prime = R.last(primes);
 
-  if (lastProduct % prime === 0) {
-    lastProduct = lastProduct / prime;
-    highestPrimeFactor = prime;
+  if (lastProduct % R.last(primes) === 0) {
+    lastProduct = lastProduct / R.last(primes);
+    highestPrimeFactor = R.last(primes);
   }
 
   primes = sieveForPrime(primes);
-  console.log(primes);
 
   return [primes, lastProduct, highestPrimeFactor];
 };
