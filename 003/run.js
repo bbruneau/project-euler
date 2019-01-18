@@ -2,19 +2,27 @@ const R = require("ramda");
 
 const max = parseInt(process.argv.slice(2)[0]) || 600851475143;
 
-const appendNextPrime = (primes = [2]) => {
-  const primesCount = primes.length;
-  let cv = primes[primesCount - 1] + 1;
+// const appendNextPrime = (primes = [2]) => {
+//   const primesCount = primes.length;
+//   let cv = primes[primesCount - 1] + 1;
 
-  while (primes.length === primesCount) {
-    if (!primes.some(prime => cv % prime === 0)) {
-      primes.push(cv);
-    }
+//   while (primes.length === primesCount) {
+//     if (!primes.some(prime => cv % prime === 0)) {
+//       primes.push(cv);
+//     }
 
-    cv++;
-  }
-  return primes;
-};
+//     cv++;
+//   }
+//   return primes;
+// };
+
+const appendNextPrime = (prevPrimes = [2]) =>
+  R.until(([primes]) => R.gt(primes.length)(prevPrimes.length))(
+    ([primes, possiblePrime]) =>
+      !primes.some(prime => possiblePrime % prime === 0)
+        ? [[...primes, possiblePrime], null]
+        : [primes, possiblePrime + 1]
+  )([prevPrimes, R.takeLast(1)(prevPrimes)[0] + 1])[0];
 
 // initialValues: [
 //   testedPrimes: Array<number>,
@@ -32,6 +40,7 @@ const checkForPrimeFactor = ([primes, highestPrimeFactor, lastProduct]) => {
   }
 
   primes = appendNextPrime(primes);
+  console.log(primes);
 
   return [primes, highestPrimeFactor, lastProduct];
 };
