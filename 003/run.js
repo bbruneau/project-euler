@@ -20,16 +20,17 @@ const sieveForPrime = (prevPrimes = [2]) =>
   );
 
 const checkForPrimeFactor = ([primes, lastProduct, highestPrimeFactor]) => {
-  const prime = R.last(primes);
-
-  if (lastProduct % R.last(primes) === 0) {
-    lastProduct = lastProduct / R.last(primes);
-    highestPrimeFactor = R.last(primes);
-  }
-
-  primes = sieveForPrime(primes);
-
-  return [primes, lastProduct, highestPrimeFactor];
+  return R.ifElse((primes, lastProduct, highestPrimeFactor) =>
+    R.equals(R.modulo(lastProduct)(R.last(primes)))(0)
+  )(() => [
+    sieveForPrime(primes),
+    lastProduct / R.last(primes),
+    R.last(primes)
+  ])(() => [sieveForPrime(primes), lastProduct, highestPrimeFactor])(
+    primes,
+    lastProduct,
+    highestPrimeFactor
+  );
 };
 
 console.log(
