@@ -2,7 +2,7 @@ const R = require("ramda");
 
 const max = parseInt(process.argv.slice(2)[0]) || 600851475143;
 
-// const appendNextPrime = (primes = [2]) => {
+// const sieveForPrime = (primes = [2]) => {
 //   const primesCount = primes.length;
 //   let cv = primes[primesCount - 1] + 1;
 
@@ -16,39 +16,41 @@ const max = parseInt(process.argv.slice(2)[0]) || 600851475143;
 //   return primes;
 // };
 
-const appendNextPrime = (prevPrimes = [2]) =>
-  R.until(([primes]) => R.gt(primes.length)(prevPrimes.length))(
-    ([primes, possiblePrime]) =>
-      !primes.some(prime => possiblePrime % prime === 0)
-        ? [[...primes, possiblePrime], null]
-        : [primes, possiblePrime + 1]
-  )([prevPrimes, R.takeLast(1)(prevPrimes)[0] + 1])[0];
+const sieveForPrime = (prevPrimes = [2]) =>
+  R.head(
+    R.until(([primes]) => R.gt(primes.length)(prevPrimes.length))(
+      ([primes, possiblePrime]) =>
+        !primes.some(prime => possiblePrime % prime === 0)
+          ? [[...primes, possiblePrime], null]
+          : [primes, possiblePrime + 1]
+    )([prevPrimes, R.last(prevPrimes) + 1])
+  );
 
 // initialValues: [
 //   testedPrimes: Array<number>,
-//   highestPrimeFactor?: number,
-//   lastProduct: number
+//   lastProduct: number,
+//   highestPrimeFactor?: number
 // ]
-const initialValues = [[2], null, max];
+const initialValues = [[2], max, null];
 
-const checkForPrimeFactor = ([primes, highestPrimeFactor, lastProduct]) => {
-  const prime = R.takeLast(1)(primes)[0];
+const checkForPrimeFactor = ([primes, lastProduct, highestPrimeFactor]) => {
+  const prime = R.last(primes);
 
   if (lastProduct % prime === 0) {
     lastProduct = lastProduct / prime;
     highestPrimeFactor = prime;
   }
 
-  primes = appendNextPrime(primes);
+  primes = sieveForPrime(primes);
   console.log(primes);
 
-  return [primes, highestPrimeFactor, lastProduct];
+  return [primes, lastProduct, highestPrimeFactor];
 };
 
 console.log(
-  R.takeLast(2)(
-    R.until(([primes, _, lastProduct]) =>
-      R.gt(R.takeLast(1)(primes))(lastProduct)
-    )(checkForPrimeFactor)(initialValues)
-  )[0]
+  R.last(
+    R.until(([primes, lastProduct]) => R.gt(R.last(primes))(lastProduct))(
+      checkForPrimeFactor
+    )(initialValues)
+  )
 );
