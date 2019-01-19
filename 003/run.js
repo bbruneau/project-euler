@@ -3,7 +3,7 @@ const R = require("ramda");
 const max = parseInt(process.argv.slice(2)[0]) || 600851475143;
 
 // initialValues: [
-//   testedPrimes: Array<number>,
+//   testedPrimes: number[],
 //   lastProduct: number,
 //   highestPrimeFactor?: number
 // ]
