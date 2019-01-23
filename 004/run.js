@@ -30,24 +30,29 @@ const checkForPalindromes = (
       a--;
     }
   }
+  if (palindrome) console.log(palindrome, a, b);
   return [Math.max(palindrome, maxPalindrome), a];
 };
 
 let maxPalindrome = 0;
+let biggestA = baseNum;
+let biggestB = baseNum;
 let b = baseNum;
 let lastA = lowNum;
 
 while (b > lowNum) {
-  const [possibleMaxPalindrome, a] = checkForPalindromes(
-    b,
-    maxPalindrome,
-    lastA
-  );
+  const [newMax, a] = checkForPalindromes(b, maxPalindrome, lastA);
 
-  maxPalindrome = Math.max(possibleMaxPalindrome, maxPalindrome);
+  if (newMax !== maxPalindrome) {
+    biggestB = b;
+    biggestA = a;
+    console.log(a, biggestB);
+  } else {
+    b--;
+  }
+
+  maxPalindrome = newMax;
 
   lastA = Math.max(lastA, a);
-
-  b--;
 }
-console.log("MAX", maxPalindrome);
+console.log("MAX", maxPalindrome, lastA, biggestB);
