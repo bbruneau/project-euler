@@ -1,8 +1,8 @@
 const R = require("ramda");
 
 const digits = parseInt(process.argv.slice(2)[0]) || 3;
-const baseNum = parseInt(new Array(digits).fill(9).join(""));
-const lowNum = parseInt(new Array(digits - 1).fill(9).join(""));
+const baseNum = parseInt(R.join("")(new Array(digits).fill(9))); // gotta figure out how to do this
+const lowNum = parseInt(R.join("")(new Array(digits - 1).fill(9)));
 
 const isPalindrome = num => {
   const numStr = num.toString();
@@ -30,8 +30,7 @@ const checkForPalindromes = (
       a--;
     }
   }
-  if (palindrome) console.log(palindrome, a, b);
-  return [Math.max(palindrome, maxPalindrome), a];
+  return [Math.max(palindrome, maxPalindrome), a, b];
 };
 
 let maxPalindrome = 0;
@@ -40,19 +39,17 @@ let biggestB = baseNum;
 let b = baseNum;
 let lastA = lowNum;
 
-while (b > lowNum) {
-  const [newMax, a] = checkForPalindromes(b, maxPalindrome, lastA);
+while (b > lowNum && b > lastA) {
+  const [newMax, newA, newB] = checkForPalindromes(b, maxPalindrome, lastA);
 
-  if (newMax !== maxPalindrome) {
-    biggestB = b;
-    biggestA = a;
-    console.log(a, biggestB);
+  if (newMax !== maxPalindrome && newMax > maxPalindrome) {
+    biggestA = newA;
+    biggestB = newB;
   } else {
     b--;
   }
 
   maxPalindrome = newMax;
-
-  lastA = Math.max(lastA, a);
+  lastA = Math.max(lastA, newA);
 }
-console.log("MAX", maxPalindrome, lastA, biggestB);
+console.log("MAX", maxPalindrome, biggestA, biggestB);
