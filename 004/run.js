@@ -4,16 +4,8 @@ const digits = parseInt(process.argv.slice(2)[0]) || 3;
 const baseNum = parseInt(R.join("")(new Array(digits).fill(9))); // gotta figure out how to do this
 const lowNum = parseInt(R.join("")(new Array(digits - 1).fill(9)));
 
-const isPalindrome = num => {
-  const numStr = num.toString();
-  const frontHalf = numStr.slice(0, numStr.length / 2);
-  const backHalf = numStr
-    .slice((numStr.length + num % 2) / 2)
-    .split("")
-    .reverse()
-    .join("");
-  return frontHalf === backHalf;
-};
+const isPalindrome = num =>
+  R.equals(R.toString(num))(R.pipe(R.toString, R.reverse)(num));
 
 const checkForPalindromes = (
   b = baseNum,
