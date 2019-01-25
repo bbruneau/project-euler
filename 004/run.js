@@ -8,6 +8,11 @@ const isPalindrome = num =>
   R.equals(R.toString(num))(R.pipe(R.toString, R.reverse)(num));
 
 const hasFoundPalindrome = ([a, lowNum, lastA, palindrome]) =>
+  R.or(R.equals(palindrome)(R.not(null)))(
+    R.or(R.lte(a)(lowNum))(R.lte(a)(lastA))
+  );
+
+const hasNotFoundPalindrome = ([a, lowNum, lastA, palindrome]) =>
   R.and(R.equals(palindrome)(null))(R.all(R.gt(a))([lowNum, lastA]));
 
 const checkForPalindromes = (
@@ -18,13 +23,21 @@ const checkForPalindromes = (
   let a = baseNum;
   let palindrome = null;
 
-  while (hasFoundPalindrome([a, lowNum, lastA, palindrome])) {
+  while (hasNotFoundPalindrome([a, lowNum, lastA, palindrome])) {
+    console.log(
+      "hasFoundPalindrome",
+      hasFoundPalindrome([a, lowNum, lastA, palindrome])
+    );
     if (isPalindrome(a * b)) {
       palindrome = a * b;
     } else {
       a--;
     }
   }
+  console.log(
+    "last hasFoundPalindrome",
+    hasFoundPalindrome([a, lowNum, lastA, palindrome])
+  );
   return [Math.max(palindrome, maxPalindrome), a, b];
 };
 
