@@ -7,6 +7,9 @@ const lowNum = parseInt(R.join("")(new Array(digits - 1).fill(9)));
 const isPalindrome = num =>
   R.equals(R.toString(num))(R.pipe(R.toString, R.reverse)(num));
 
+const hasFoundPalindrome = ([a, lowNum, lastA, palindrome]) =>
+  R.and(R.equals(palindrome)(null))(R.all(R.gt(a))([lowNum, lastA]));
+
 const checkForPalindromes = (
   b = baseNum,
   maxPalindrome = 0,
@@ -15,7 +18,7 @@ const checkForPalindromes = (
   let a = baseNum;
   let palindrome = null;
 
-  while (palindrome === null && a > lowNum && a > lastA) {
+  while (hasFoundPalindrome([a, lowNum, lastA, palindrome])) {
     if (isPalindrome(a * b)) {
       palindrome = a * b;
     } else {
