@@ -8,9 +8,7 @@ const isPalindrome = num =>
   R.equals(R.toString(num))(R.pipe(R.toString, R.reverse)(num));
 
 const hasFoundPalindrome = ([a, lowNum, lastA, palindrome]) =>
-  R.or(R.equals(palindrome)(R.not(null)))(
-    R.or(R.lte(a)(lowNum))(R.lte(a)(lastA))
-  );
+  R.or(R.not(R.isNil(palindrome)))(R.or(R.lte(a)(lowNum))(R.lte(a)(lastA)));
 
 const hasNotFoundPalindrome = ([a, lowNum, lastA, palindrome]) =>
   R.and(R.equals(palindrome)(null))(R.all(R.gt(a))([lowNum, lastA]));
@@ -23,22 +21,26 @@ const checkForPalindromes = (
   let a = baseNum;
   let palindrome = null;
 
-  while (hasNotFoundPalindrome([a, lowNum, lastA, palindrome])) {
-    console.log(
-      "hasFoundPalindrome",
-      hasFoundPalindrome([a, lowNum, lastA, palindrome])
-    );
+  const result = R.until(hasFoundPalindrome)(([a, lowNum, lastA]) => {
     if (isPalindrome(a * b)) {
-      palindrome = a * b;
+      return [a, lowNum, lastA, a * b];
     } else {
-      a--;
+      return [a - 1, lowNum, lastA, null];
     }
-  }
-  console.log(
-    "last hasFoundPalindrome",
-    hasFoundPalindrome([a, lowNum, lastA, palindrome])
-  );
-  return [Math.max(palindrome, maxPalindrome), a, b];
+  })([a, lowNum, lastA, null]);
+  // while (hasNotFoundPalindrome([a, lowNum, lastA, palindrome])) {
+  //   console.log(
+  //     "hasFoundPalindrome",
+  //     hasFoundPalindrome([a, lowNum, lastA, palindrome])
+  //   );
+  //   if (isPalindrome(a * b)) {
+  //     palindrome = a * b;
+  //   } else {
+  //     a--;
+  //   }
+  // }
+  // return [Math.max(palindrome, maxPalindrome), a, b];
+  return [Math.max(result[3], maxPalindrome), result[0]];
 };
 
 let maxPalindrome = 0;
@@ -48,11 +50,12 @@ let b = baseNum;
 let lastA = lowNum;
 
 while (b > lowNum && b > lastA) {
-  const [newMax, newA, newB] = checkForPalindromes(b, maxPalindrome, lastA);
+  console.log(b, maxPalindrome, lastA);
+  const [newMax, newA] = checkForPalindromes(b, maxPalindrome, lastA);
 
   if (newMax !== maxPalindrome && newMax > maxPalindrome) {
     biggestA = newA;
-    biggestB = newB;
+    biggestB = b;
   } else {
     b--;
   }
